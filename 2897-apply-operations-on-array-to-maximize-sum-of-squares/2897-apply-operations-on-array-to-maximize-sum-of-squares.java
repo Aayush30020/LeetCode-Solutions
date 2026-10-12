@@ -1,16 +1,24 @@
 class Solution {
     public int maxSum(List<Integer> nums, int k) {
-        final long MOD = 1_000_000_007;
-        int[] cnt = new int[30];  // coins in each bit column, never changes
+        int[] b = new int[30];
+        long ans = 0, mod = 1000000007;
+
+        // Step 1: count the 1-bits in every bit position
         for (int x : nums)
-            for (int b = 0; b < 30; b++) cnt[b] += x >> b & 1;
-        long total = 0;
-        for (int i = 0; i < k; i++) {  // build row i of the stacked picture
-            long row = 0;
-            for (int b = 0; b < 30; b++)
-                if (cnt[b] > i) row |= 1L << b;  // a coin from every column with more than i coins
-            total = (total + row * row) % MOD;
+            for (int i = 0; i < 30; i++)
+                if ((x & (1 << i)) != 0) b[i]++;
+
+        // Step 2: build k numbers, each takes one 1-bit from every position that still has one
+        while (k-- > 0) {
+            long x = 0;
+            for (int i = 0; i < 30; i++)
+                if (b[i] > 0) {
+                    x |= 1L << i;
+                    b[i]--;
+                }
+            ans = (ans + x * x) % mod;
         }
-        return (int) total;
+
+        return (int) ans;
     }
 }
